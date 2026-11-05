@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "parts": [
+    {
+      "id": "fox_mouth",
+      "nameKey": "part.fox_mouth.name",
+      "slot": "head",
+      "branch": "devour",
+      "bossId": "nine_tail_shadow",
+      "baseEffects": [
+        { "effectKey": "soul_absorb_radius_multiplier", "value": 1.2 },
+        { "effectKey": "injured_target_damage_multiplier", "value": 1.1 },
+        { "effectKey": "soul_absorb_heal_chance", "value": 0.1 },
+        { "effectKey": "soul_absorb_heal_amount", "value": 1 }
+      ],
+      "branchEffects": {
+        "devour": [
+          { "effectKey": "devour_node_discount", "value": 2 }
+        ]
+      },
+      "upgradeChoices": [
+        {
+          "id": "fox_mouth_binge",
+          "nameKey": "partUpgrade.fox_mouth_binge.name",
+          "effectKey": "soul_absorb_attack_speed_window",
+          "value": 0.25
+        },
+        {
+          "id": "fox_mouth_regeneration",
+          "nameKey": "partUpgrade.fox_mouth_regeneration.name",
+          "effectKey": "soul_absorb_heal_bonus",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "nine_tail",
+      "nameKey": "part.nine_tail.name",
+      "slot": "tail",
+      "branch": "flame",
+      "bossId": "nine_tail_shadow",
+      "baseEffects": [
+        { "effectKey": "ember_chance", "value": 0.15 },
+        { "effectKey": "ember_duration_sec", "value": 1 },
+        { "effectKey": "ember_damage_per_tick", "value": 5 },
+        { "effectKey": "fire_tracking_duration_bonus_sec", "value": 0.4 }
+      ],
+      "branchEffects": {
+        "flame": [
+          { "effectKey": "burn_explosion_radius_multiplier", "value": 1.2 }
+        ]
+      },
+      "upgradeChoices": [
+        {
+          "id": "nine_tail_burning_path",
+          "nameKey": "partUpgrade.nine_tail_burning_path.name",
+          "effectKey": "burning_path",
+          "value": 1
+        },
+        {
+          "id": "nine_tail_split_flame",
+          "nameKey": "partUpgrade.nine_tail_split_flame.name",
+          "effectKey": "ember_projectile_split",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "kui_horn",
+      "nameKey": "part.kui_horn.name",
+      "slot": "head",
+      "branch": "flame",
+      "bossId": "kui_spirit",
+      "baseEffects": [
+        { "effectKey": "basic_attack_lightning_interval", "value": 4 },
+        { "effectKey": "basic_attack_lightning_damage", "value": 16 },
+        { "effectKey": "thunder_stun_chance_bonus", "value": 0.1 }
+      ],
+      "branchEffects": {
+        "flame": [
+          { "effectKey": "thunder_zone_duration_multiplier", "value": 1.2 }
+        ]
+      },
+      "upgradeChoices": [
+        {
+          "id": "kui_horn_chain",
+          "nameKey": "partUpgrade.kui_horn_chain.name",
+          "effectKey": "horn_lightning_bounce",
+          "value": 1
+        },
+        {
+          "id": "kui_horn_stun",
+          "nameKey": "partUpgrade.kui_horn_stun.name",
+          "effectKey": "horn_lightning_stun_duration_sec",
+          "value": 0.4
+        }
+      ]
+    },
+    {
+      "id": "kui_hoof",
+      "nameKey": "part.kui_hoof.name",
+      "slot": "limb",
+      "branch": "brute",
+      "bossId": "kui_spirit",
+      "baseEffects": [
+        { "effectKey": "dash_distance_multiplier", "value": 1.2 },
+        { "effectKey": "dash_cooldown_bonus_sec", "value": -0.6 },
+        { "effectKey": "dash_knockback_multiplier", "value": 1.25 },
+        { "effectKey": "dash_protection_sec", "value": 0.2 }
+      ],
+      "branchEffects": {
+        "brute": [
+          { "effectKey": "dash_damage_bonus", "value": 20 }
+        ]
+      },
+      "upgradeChoices": [
+        {
+          "id": "kui_hoof_stomp",
+          "nameKey": "partUpgrade.kui_hoof_stomp.name",
+          "effectKey": "dash_impact_radius_px",
+          "value": 36
+        },
+        {
+          "id": "kui_hoof_guard",
+          "nameKey": "partUpgrade.kui_hoof_guard.name",
+          "effectKey": "dash_armor_sec",
+          "value": 0.35
+        }
+      ]
+    },
+    {
+      "id": "qiongqi_wing",
+      "nameKey": "part.qiongqi_wing.name",
+      "slot": "limb",
+      "branch": "brute",
+      "bossId": "qiongqi",
+      "availability": "first_clear_unlock",
+      "baseEffects": [
+        { "effectKey": "dash_distance_multiplier", "value": 1.2 },
+        { "effectKey": "dash_projectile_afterimage", "value": 1 }
+      ],
+      "upgradeChoices": [
+        {
+          "id": "qiongqi_wing_blades",
+          "nameKey": "partUpgrade.qiongqi_wing_blades.name",
+          "effectKey": "dash_blade_count",
+          "value": 3
+        },
+        {
+          "id": "qiongqi_wing_guard",
+          "nameKey": "partUpgrade.qiongqi_wing_guard.name",
+          "effectKey": "dash_shield_sec",
+          "value": 0.5
+        }
+      ]
+    }
+  ]
+}

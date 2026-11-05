@@ -1,0 +1,21 @@
+{
+  "name": "beast-evo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "validate:data": "node scripts/validate-data.mjs",
+    "test": "node scripts/test-three-runtime.mjs && node scripts/test-three-full-gameplay.mjs && node scripts/test-three-p2-features.mjs"
+  },
+  "dependencies": {
+    "@types/three": "^0.187.0",
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.64.1",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0"
+  }
+}

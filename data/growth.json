@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "branches": [
+    {
+      "id": "devour",
+      "nameKey": "branch.devour.name",
+      "nodes": [
+        {
+          "id": "soul_instinct",
+          "soulAbsorbRadiusMultiplier": 1.35,
+          "soulMoveSpeedMultiplier": 1.25,
+          "soulLifetimeBonusSec": 5
+        },
+        {
+          "id": "gluttonous_echo",
+          "triggerSoulCount": 8,
+          "attackSpeedMultiplier": 1.25,
+          "healAmount": 4,
+          "durationSec": 4
+        }
+      ]
+    },
+    {
+      "id": "brute",
+      "nameKey": "branch.brute.name",
+      "nodes": [
+        {
+          "id": "thick_flesh",
+          "maxHealthBonus": 15,
+          "nearDamageReduction": 0.1,
+          "knockbackResistance": 0.2
+        },
+        {
+          "id": "brutal_impact",
+          "dashDamage": 20,
+          "dashInvulnerableSec": 0.35,
+          "dashKnockback": 1
+        }
+      ]
+    },
+    {
+      "id": "flame",
+      "nameKey": "branch.flame.name",
+      "nodes": [
+        {
+          "id": "ember_attach",
+          "burnChance": 0.3,
+          "burnDurationSec": 2,
+          "burnDamagePerSec": 4
+        },
+        {
+          "id": "burning_spread",
+          "deathFireRadiusPx": 28,
+          "deathFireDurationSec": 1.5,
+          "deathFireDamagePerTick": 6,
+          "deathFireTickSec": 0.5,
+          "deathFireTargetLimit": 4
+        }
+      ]
+    }
+  ],
+  "synergies": [
+    {
+      "id": "devour_brute",
+      "requiredBranches": ["devour", "brute"],
+      "requiredNodes": ["soul_instinct", "thick_flesh"],
+      "effectKey": "gluttonous_recoil",
+      "baseEffects": [
+        { "effectKey": "soul_trigger_count", "value": 8 },
+        { "effectKey": "dash_shield_sec", "value": 0.5 },
+        { "effectKey": "soul_pull_radius_px", "value": 50 }
+      ],
+      "partEnhancedEffects": [
+        { "effectKey": "dash_shield_sec", "value": 0.8 },
+        { "effectKey": "soul_pull_radius_px", "value": 75 }
+      ]
+    },
+    {
+      "id": "devour_flame",
+      "requiredBranches": ["devour", "flame"],
+      "requiredNodes": ["soul_instinct", "ember_attach"],
+      "effectKey": "devour_flame_echo",
+      "baseEffects": [
+        { "effectKey": "soul_trigger_count", "value": 5 },
+        { "effectKey": "next_fire_damage_multiplier", "value": 1.2 }
+      ],
+      "partEnhancedEffects": [
+        { "effectKey": "next_fire_extra_burn", "value": 1 },
+        { "effectKey": "ember_duration_bonus_sec", "value": 0.5 }
+      ]
+    },
+    {
+      "id": "brute_flame",
+      "requiredBranches": ["brute", "flame"],
+      "requiredNodes": ["thick_flesh", "ember_attach"],
+      "effectKey": "heated_charge",
+      "baseEffects": [
+        { "effectKey": "dash_burn_explosion_radius_px", "value": 36 },
+        { "effectKey": "dash_burn_explosion_damage", "value": 18 }
+      ],
+      "partEnhancedEffects": [
+        { "effectKey": "dash_fire_path_duration_sec", "value": 1 },
+        { "effectKey": "dash_fire_path_damage_per_tick", "value": 6 }
+      ]
+    }
+  ]
+}

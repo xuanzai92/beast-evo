@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "balanceVersion": "v0.1-draft",
+  "player": {
+    "maxHealth": 100,
+    "moveSpeedPxPerSec": 140,
+    "dashCooldownSec": 6,
+    "dashDurationSec": 0.25,
+    "dashDistancePx": 85,
+    "dashInvulnerableSec": 0.4,
+    "soulAbsorbRadiusPx": 42,
+    "soulLifetimeSec": 25,
+    "soulMoveSpeedPxPerSec": 70,
+    "stageRecoveryRatio": 0.25
+  },
+  "experience": {
+    "baseXpToNext": 100,
+    "growthMultiplier": 1.18,
+    "upgradeSkipRatio": 0.25
+  },
+  "upgradeDraft": {
+    "choiceCount": 3,
+    "firstRandomSkillAtLevel": 2,
+    "secondRandomSkillAtLevel": 3,
+    "mainBranchWeight": 0.3,
+    "secondaryBranchWeight": 0.2,
+    "skillWeight": 0.3,
+    "statWeight": 0.2,
+    "maxBranchCountPerRun": 2
+  },
+  "partSlots": ["head", "limb", "tail", "armor"],
+  "performanceBudget": {
+    "stageOneMaxAlive": 24,
+    "stageTwoMaxAlive": 34,
+    "stageThreeMaxAlive": 44,
+    "maxEliteAlive": 3
+  }
+}

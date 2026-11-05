@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "skills": [
+    {
+      "id": "basic_bite",
+      "nameKey": "skill.basic_bite.name",
+      "kind": "basic",
+      "behaviorKey": "directional_bite",
+      "stages": [
+        {
+          "stage": 1,
+          "cooldownSec": 0.9,
+          "damage": 10,
+          "rangePx": 58,
+          "angleDeg": 55,
+          "targetLimit": 2
+        }
+      ]
+    },
+    {
+      "id": "devour_mouth",
+      "nameKey": "skill.devour_mouth.name",
+      "kind": "active",
+      "selectionType": "fixed",
+      "behaviorKey": "directional_pull_cone",
+      "stages": [
+        {
+          "stage": 1,
+          "cooldownSec": 2.0,
+          "damage": 18,
+          "rangePx": 78,
+          "angleDeg": 70,
+          "targetLimit": 5,
+          "pullStrength": 0.3
+        },
+        {
+          "stage": 2,
+          "cooldownSec": 1.7,
+          "damage": 22,
+          "rangePx": 94,
+          "angleDeg": 90,
+          "targetLimit": 8,
+          "pullStrength": 0.5
+        },
+        {
+          "stage": 3,
+          "cooldownSec": 1.7,
+          "damage": 26,
+          "rangePx": 94,
+          "angleDeg": 90,
+          "targetLimit": 8,
+          "pullStrength": 0.5,
+          "healOnThreeHits": 2,
+          "injuredTargetDamageMultiplier": 1.2
+        }
+      ]
+    },
+    {
+      "id": "nine_tail_fire",
+      "nameKey": "skill.nine_tail_fire.name",
+      "kind": "active",
+      "selectionType": "random",
+      "behaviorKey": "tracking_projectile",
+      "stages": [
+        {
+          "stage": 1,
+          "cooldownSec": 1.6,
+          "damage": 16,
+          "projectileCount": 1,
+          "trackingDurationSec": 1.5
+        },
+        {
+          "stage": 2,
+          "cooldownSec": 1.4,
+          "damage": 16,
+          "projectileCount": 1,
+          "splitCount": 2,
+          "splitDamageRatio": 0.45,
+          "trackingDurationSec": 1.5
+        },
+        {
+          "stage": 3,
+          "cooldownSec": 1.4,
+          "damage": 16,
+          "projectileCount": 1,
+          "splitCount": 2,
+          "splitDamageRatio": 0.45,
+          "burnDurationSec": 2.5,
+          "burnDamagePerSec": 5,
+          "deathExplosionRadiusPx": 32,
+          "deathExplosionDamage": 12
+        }
+      ]
+    },
+    {
+      "id": "kui_thunder",
+      "nameKey": "skill.kui_thunder.name",
+      "kind": "active",
+      "selectionType": "random",
+      "behaviorKey": "warning_lightning",
+      "stages": [
+        {
+          "stage": 1,
+          "cooldownSec": 2.2,
+          "damage": 24,
+          "targetCount": 1,
+          "warningSec": 0.45,
+          "impactRadiusPx": 24
+        },
+        {
+          "stage": 2,
+          "cooldownSec": 2.2,
+          "damage": 24,
+          "targetCount": 1,
+          "bounceCount": 1,
+          "bounceDamageRatio": 0.7,
+          "warningSec": 0.45,
+          "impactRadiusPx": 24
+        },
+        {
+          "stage": 3,
+          "cooldownSec": 2.2,
+          "damage": 24,
+          "targetCount": 1,
+          "bounceCount": 1,
+          "bounceDamageRatio": 0.7,
+          "warningSec": 0.45,
+          "impactRadiusPx": 24,
+          "zoneDurationSec": 1.5,
+          "zoneDamagePerTick": 8,
+          "zoneTickSec": 0.5,
+          "stunChance": 0.15
+        }
+      ]
+    }
+  ]
+}

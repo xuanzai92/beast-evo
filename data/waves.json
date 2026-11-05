@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "waveSets": [
+    {
+      "id": "qingqiu_01",
+      "waves": [
+        {
+          "startSec": 0,
+          "endSec": 30,
+          "spawnRatePerSec": 1.5,
+          "maxAlive": 12,
+          "enemyPool": [{ "creatureId": "spirit_bug", "weight": 100 }]
+        },
+        {
+          "startSec": 30,
+          "endSec": 60,
+          "spawnRatePerSec": 2.2,
+          "maxAlive": 18,
+          "enemyPool": [
+            { "creatureId": "spirit_bug", "weight": 65 },
+            { "creatureId": "spirit_rat", "weight": 35 }
+          ]
+        },
+        {
+          "startSec": 60,
+          "endSec": 90,
+          "spawnRatePerSec": 2.6,
+          "maxAlive": 24,
+          "enemyPool": [
+            { "creatureId": "spirit_rat", "weight": 45 },
+            { "creatureId": "mountain_spirit", "weight": 45 },
+            { "creatureId": "elite_mountain_spirit", "weight": 10 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qingqiu_02",
+      "waves": [
+        {
+          "startSec": 0,
+          "endSec": 40,
+          "spawnRatePerSec": 2.4,
+          "maxAlive": 26,
+          "enemyPool": [
+            { "creatureId": "reinforced_spirit_rat", "weight": 55 },
+            { "creatureId": "reinforced_mountain_spirit", "weight": 45 }
+          ]
+        },
+        {
+          "startSec": 40,
+          "endSec": 80,
+          "spawnRatePerSec": 2.8,
+          "maxAlive": 30,
+          "enemyPool": [
+            { "creatureId": "red_feather_bird", "weight": 45 },
+            { "creatureId": "reinforced_spirit_rat", "weight": 35 },
+            { "creatureId": "elite_mountain_spirit", "weight": 20 }
+          ]
+        },
+        {
+          "startSec": 80,
+          "endSec": 120,
+          "spawnRatePerSec": 3.0,
+          "maxAlive": 34,
+          "enemyPool": [
+            { "creatureId": "rock_beast", "weight": 35 },
+            { "creatureId": "red_feather_bird", "weight": 35 },
+            { "creatureId": "reinforced_mountain_spirit", "weight": 20 },
+            { "creatureId": "elite_rock_beast", "weight": 10 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qingqiu_03",
+      "waves": [
+        {
+          "startSec": 0,
+          "endSec": 50,
+          "spawnRatePerSec": 3.0,
+          "maxAlive": 36,
+          "enemyPool": [
+            { "creatureId": "corrupted_spirit_bug", "weight": 35 },
+            { "creatureId": "reinforced_spirit_rat", "weight": 35 },
+            { "creatureId": "red_feather_bird", "weight": 30 }
+          ]
+        },
+        {
+          "startSec": 50,
+          "endSec": 100,
+          "spawnRatePerSec": 3.4,
+          "maxAlive": 40,
+          "enemyPool": [
+            { "creatureId": "corrupted_red_feather_bird", "weight": 30 },
+            { "creatureId": "heavy_rock_beast", "weight": 30 },
+            { "creatureId": "reinforced_mountain_spirit", "weight": 25 },
+            { "creatureId": "elite_mountain_spirit", "weight": 15 }
+          ]
+        },
+        {
+          "startSec": 100,
+          "endSec": 150,
+          "spawnRatePerSec": 3.7,
+          "maxAlive": 44,
+          "enemyPool": [
+            { "creatureId": "corrupted_spirit_bug", "weight": 20 },
+            { "creatureId": "corrupted_red_feather_bird", "weight": 25 },
+            { "creatureId": "heavy_rock_beast", "weight": 30 },
+            { "creatureId": "elite_rock_beast", "weight": 15 },
+            { "creatureId": "reinforced_mountain_spirit", "weight": 10 }
+          ]
+        }
+      ]
+    }
+  ]
+}

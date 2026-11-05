@@ -1,0 +1,47 @@
+{
+  "skill": {
+    "basic_bite": { "name": "饕餮撕咬" },
+    "devour_mouth": { "name": "饕餮巨口" },
+    "nine_tail_fire": { "name": "九尾妖火" },
+    "kui_thunder": { "name": "夔牛雷霆" }
+  },
+  "part": {
+    "fox_mouth": { "name": "狐口" },
+    "nine_tail": { "name": "九尾" },
+    "kui_horn": { "name": "夔牛雷角" },
+    "kui_hoof": { "name": "夔牛蹄" },
+    "qiongqi_wing": { "name": "穷奇之翼" }
+  },
+  "partUpgrade": {
+    "fox_mouth_binge": { "name": "暴食加速" },
+    "fox_mouth_regeneration": { "name": "吞食回复" },
+    "nine_tail_burning_path": { "name": "焚烧路径" },
+    "nine_tail_split_flame": { "name": "分裂余烬" },
+    "kui_horn_chain": { "name": "雷角连锁" },
+    "kui_horn_stun": { "name": "雷角震慑" },
+    "kui_hoof_stomp": { "name": "踏地冲击" },
+    "kui_hoof_guard": { "name": "冲锋护体" },
+    "qiongqi_wing_blades": { "name": "羽刃追击" },
+    "qiongqi_wing_guard": { "name": "翼护" }
+  },
+  "branch": {
+    "devour": { "name": "暴食" },
+    "brute": { "name": "凶躯" },
+    "flame": { "name": "贪炎" }
+  },
+  "creature": {
+    "spirit_bug": { "name": "灵虫" },
+    "spirit_rat": { "name": "灵鼠" },
+    "mountain_spirit": { "name": "山精" },
+    "red_feather_bird": { "name": "赤羽鸟" },
+    "rock_beast": { "name": "岩甲兽" },
+    "nine_tail_shadow": { "name": "九尾狐影" },
+    "kui_spirit": { "name": "夔牛残灵" },
+    "qiongqi": { "name": "穷奇" }
+  },
+  "stage": {
+    "qingqiu_01": { "name": "青丘初醒" },
+    "qingqiu_02": { "name": "雷泽试炼" },
+    "qingqiu_03": { "name": "穷奇终局" }
+  }
+}

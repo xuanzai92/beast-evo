@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.playwright-mcp/
+.DS_Store
+data/.DS_Store
+logs/
+output/web-game/*.png
+output/web-game/*.webp
+output/web-game/*.jpg

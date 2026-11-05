@@ -1,0 +1,47 @@
+{
+  "skill": {
+    "basic_bite": { "name": "Taotie Bite" },
+    "devour_mouth": { "name": "Devourer's Maw" },
+    "nine_tail_fire": { "name": "Nine-Tail Flame" },
+    "kui_thunder": { "name": "Kui Thunder" }
+  },
+  "part": {
+    "fox_mouth": { "name": "Fox Maw" },
+    "nine_tail": { "name": "Nine Tails" },
+    "kui_horn": { "name": "Kui Horn" },
+    "kui_hoof": { "name": "Kui Hoof" },
+    "qiongqi_wing": { "name": "Qiongqi Wing" }
+  },
+  "partUpgrade": {
+    "fox_mouth_binge": { "name": "Binge Acceleration" },
+    "fox_mouth_regeneration": { "name": "Devourer Recovery" },
+    "nine_tail_burning_path": { "name": "Burning Path" },
+    "nine_tail_split_flame": { "name": "Split Ember" },
+    "kui_horn_chain": { "name": "Horn Chain" },
+    "kui_horn_stun": { "name": "Horn Shock" },
+    "kui_hoof_stomp": { "name": "Ground Stomp" },
+    "kui_hoof_guard": { "name": "Charge Guard" },
+    "qiongqi_wing_blades": { "name": "Wing Blades" },
+    "qiongqi_wing_guard": { "name": "Wing Guard" }
+  },
+  "branch": {
+    "devour": { "name": "Devour" },
+    "brute": { "name": "Brute" },
+    "flame": { "name": "Flame" }
+  },
+  "creature": {
+    "spirit_bug": { "name": "Spirit Bug" },
+    "spirit_rat": { "name": "Spirit Rat" },
+    "mountain_spirit": { "name": "Mountain Spirit" },
+    "red_feather_bird": { "name": "Redfeather Bird" },
+    "rock_beast": { "name": "Rock Beast" },
+    "nine_tail_shadow": { "name": "Nine-Tail Shade" },
+    "kui_spirit": { "name": "Kui Remnant" },
+    "qiongqi": { "name": "Qiongqi" }
+  },
+  "stage": {
+    "qingqiu_01": { "name": "Qingqiu Awakening" },
+    "qingqiu_02": { "name": "Thunder Marsh Trial" },
+    "qingqiu_03": { "name": "Qiongqi Finale" }
+  }
+}

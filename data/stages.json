@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "stages": [
+    {
+      "id": "qingqiu_01",
+      "nameKey": "stage.qingqiu_01.name",
+      "normalDurationSec": 90,
+      "bossId": "nine_tail_shadow",
+      "bossTargetDurationSec": 45,
+      "waveSetId": "qingqiu_01",
+      "partOfferPolicy": "different_branches",
+      "partOfferCount": 2,
+      "postBossRecoveryRatio": 0.25
+    },
+    {
+      "id": "qingqiu_02",
+      "nameKey": "stage.qingqiu_02.name",
+      "normalDurationSec": 120,
+      "bossId": "kui_spirit",
+      "bossTargetDurationSec": 60,
+      "waveSetId": "qingqiu_02",
+      "partOfferPolicy": "adaptive_main_or_secondary",
+      "partOfferCount": 2,
+      "postBossRecoveryRatio": 0.25
+    },
+    {
+      "id": "qingqiu_03",
+      "nameKey": "stage.qingqiu_03.name",
+      "normalDurationSec": 150,
+      "bossId": "qiongqi",
+      "bossTargetDurationSec": 75,
+      "waveSetId": "qingqiu_03",
+      "partOfferPolicy": "none",
+      "partOfferCount": 0,
+      "postBossRecoveryRatio": 0
+    }
+  ]
+}

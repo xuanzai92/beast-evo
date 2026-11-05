@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "creatures": [
+    {
+      "id": "spirit_bug",
+      "kind": "normal",
+      "nameKey": "creature.spirit_bug.name",
+      "variant": "base",
+      "stats": { "health": 12, "moveSpeedPxPerSec": 35, "contactDamage": 4, "soul": 4 }
+    },
+    {
+      "id": "spirit_rat",
+      "kind": "normal",
+      "nameKey": "creature.spirit_rat.name",
+      "variant": "base",
+      "stats": { "health": 18, "moveSpeedPxPerSec": 58, "contactDamage": 5, "soul": 6 }
+    },
+    {
+      "id": "mountain_spirit",
+      "kind": "normal",
+      "nameKey": "creature.mountain_spirit.name",
+      "variant": "base",
+      "stats": { "health": 35, "moveSpeedPxPerSec": 42, "contactDamage": 8, "soul": 10 }
+    },
+    {
+      "id": "red_feather_bird",
+      "kind": "normal",
+      "nameKey": "creature.red_feather_bird.name",
+      "variant": "base",
+      "stats": { "health": 24, "moveSpeedPxPerSec": 88, "contactDamage": 6, "soul": 8 }
+    },
+    {
+      "id": "rock_beast",
+      "kind": "normal",
+      "nameKey": "creature.rock_beast.name",
+      "variant": "base",
+      "stats": { "health": 80, "moveSpeedPxPerSec": 28, "contactDamage": 12, "soul": 20 }
+    },
+    {
+      "id": "reinforced_spirit_rat",
+      "kind": "normal",
+      "nameKey": "creature.spirit_rat.name",
+      "variant": "reinforced",
+      "stats": { "health": 30, "moveSpeedPxPerSec": 68, "contactDamage": 7, "soul": 9 }
+    },
+    {
+      "id": "reinforced_mountain_spirit",
+      "kind": "normal",
+      "nameKey": "creature.mountain_spirit.name",
+      "variant": "reinforced",
+      "stats": { "health": 55, "moveSpeedPxPerSec": 48, "contactDamage": 11, "soul": 14 }
+    },
+    {
+      "id": "corrupted_spirit_bug",
+      "kind": "normal",
+      "nameKey": "creature.spirit_bug.name",
+      "variant": "corrupted",
+      "stats": { "health": 26, "moveSpeedPxPerSec": 42, "contactDamage": 7, "soul": 8 },
+      "behaviorKey": "death_hazard"
+    },
+    {
+      "id": "corrupted_red_feather_bird",
+      "kind": "normal",
+      "nameKey": "creature.red_feather_bird.name",
+      "variant": "corrupted",
+      "stats": { "health": 42, "moveSpeedPxPerSec": 96, "contactDamage": 9, "soul": 13 },
+      "behaviorKey": "dash_bird"
+    },
+    {
+      "id": "heavy_rock_beast",
+      "kind": "normal",
+      "nameKey": "creature.rock_beast.name",
+      "variant": "heavy",
+      "stats": { "health": 120, "moveSpeedPxPerSec": 30, "contactDamage": 16, "soul": 28 }
+    },
+    {
+      "id": "elite_mountain_spirit",
+      "kind": "elite",
+      "nameKey": "creature.mountain_spirit.name",
+      "variant": "elite",
+      "stats": { "health": 105, "moveSpeedPxPerSec": 45, "contactDamage": 12, "soul": 50 }
+    },
+    {
+      "id": "elite_rock_beast",
+      "kind": "elite",
+      "nameKey": "creature.rock_beast.name",
+      "variant": "elite",
+      "stats": { "health": 240, "moveSpeedPxPerSec": 30, "contactDamage": 18, "soul": 100 }
+    },
+    {
+      "id": "nine_tail_shadow",
+      "kind": "boss",
+      "nameKey": "creature.nine_tail_shadow.name",
+      "stats": { "health": 650, "moveSpeedPxPerSec": 52, "contactDamage": 18, "soul": 0 },
+      "targetDurationSec": 45,
+      "phases": [
+        { "healthRatioBelow": 1, "behaviorKey": "fox_fire_tracking" },
+        { "healthRatioBelow": 0.6, "behaviorKey": "fox_tail_sweep" }
+      ]
+    },
+    {
+      "id": "kui_spirit",
+      "kind": "boss",
+      "nameKey": "creature.kui_spirit.name",
+      "stats": { "health": 1050, "moveSpeedPxPerSec": 45, "contactDamage": 24, "soul": 0 },
+      "targetDurationSec": 60,
+      "phases": [
+        { "healthRatioBelow": 1, "behaviorKey": "thunder_warning" },
+        { "healthRatioBelow": 0.5, "behaviorKey": "chain_lightning_and_summon" }
+      ]
+    },
+    {
+      "id": "qiongqi",
+      "kind": "boss",
+      "nameKey": "creature.qiongqi.name",
+      "stats": { "health": 1700, "moveSpeedPxPerSec": 60, "contactDamage": 30, "soul": 0 },
+      "targetDurationSec": 75,
+      "phases": [
+        { "healthRatioBelow": 1, "behaviorKey": "qiongqi_dash_hunt" },
+        { "healthRatioBelow": 0.65, "behaviorKey": "qiongqi_fan_attack" },
+        { "healthRatioBelow": 0.3, "behaviorKey": "qiongqi_enrage" }
+      ]
+    }
+  ]
+}
