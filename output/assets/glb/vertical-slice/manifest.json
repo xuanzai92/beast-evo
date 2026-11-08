@@ -1,0 +1,403 @@
+{
+  "schemaVersion": 1,
+  "status": "vertical-slice-glb",
+  "note": "Procedural low-poly GLB vertical slice generated from the approved art direction. Replace with Blender-authored meshes when available.",
+  "models": {
+    "taotie": "/assets/models/vertical-slice/taotie.glb",
+    "nine_tail_shadow": "/assets/models/vertical-slice/nine_tail_shadow.glb",
+    "kui_spirit": "/assets/models/vertical-slice/kui_spirit.glb",
+    "qiongqi": "/assets/models/vertical-slice/qiongqi.glb",
+    "spirit_bug": "/assets/models/vertical-slice/spirit_bug.glb",
+    "spirit_rat": "/assets/models/vertical-slice/spirit_rat.glb",
+    "mountain_spirit": "/assets/models/vertical-slice/mountain_spirit.glb",
+    "red_feather_bird": "/assets/models/vertical-slice/red_feather_bird.glb",
+    "rock_beast": "/assets/models/vertical-slice/rock_beast.glb",
+    "reinforced_spirit_rat": "/assets/models/vertical-slice/reinforced_spirit_rat.glb",
+    "reinforced_mountain_spirit": "/assets/models/vertical-slice/reinforced_mountain_spirit.glb",
+    "corrupted_spirit_bug": "/assets/models/vertical-slice/corrupted_spirit_bug.glb",
+    "corrupted_red_feather_bird": "/assets/models/vertical-slice/corrupted_red_feather_bird.glb",
+    "heavy_rock_beast": "/assets/models/vertical-slice/heavy_rock_beast.glb",
+    "elite_mountain_spirit": "/assets/models/vertical-slice/elite_mountain_spirit.glb",
+    "elite_rock_beast": "/assets/models/vertical-slice/elite_rock_beast.glb",
+    "fox_mouth": "/assets/models/vertical-slice/fox_mouth.glb",
+    "nine_tail": "/assets/models/vertical-slice/nine_tail.glb",
+    "kui_horn": "/assets/models/vertical-slice/kui_horn.glb",
+    "kui_hoof": "/assets/models/vertical-slice/kui_hoof.glb",
+    "qiongqi_wing": "/assets/models/vertical-slice/qiongqi_wing.glb",
+    "qingqiu_01": "/assets/models/vertical-slice/qingqiu_01.glb"
+  },
+  "animations": {
+    "taotie": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ],
+    "nine_tail_shadow": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ],
+    "kui_spirit": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ],
+    "qiongqi": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ],
+    "spirit_bug": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ],
+    "spirit_rat": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ],
+    "mountain_spirit": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ],
+    "red_feather_bird": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ],
+    "rock_beast": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ],
+    "reinforced_spirit_rat": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ],
+    "reinforced_mountain_spirit": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ],
+    "corrupted_spirit_bug": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ],
+    "corrupted_red_feather_bird": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ],
+    "heavy_rock_beast": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ],
+    "elite_mountain_spirit": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ],
+    "elite_rock_beast": [
+      "idle",
+      "run",
+      "attack",
+      "hit",
+      "dash",
+      "death"
+    ]
+  },
+  "modelQuality": {
+    "taotie": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "nine_tail_shadow": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "kui_spirit": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "qiongqi": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "spirit_bug": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "spirit_rat": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "mountain_spirit": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "red_feather_bird": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "rock_beast": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "reinforced_spirit_rat": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "reinforced_mountain_spirit": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "corrupted_spirit_bug": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "corrupted_red_feather_bird": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "heavy_rock_beast": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "elite_mountain_spirit": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "elite_rock_beast": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "fox_mouth": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "nine_tail": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "kui_horn": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "kui_hoof": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "qiongqi_wing": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    },
+    "qingqiu_01": {
+      "lods": [
+        "base"
+      ],
+      "targetLods": [
+        "base",
+        "combat"
+      ],
+      "materialProfile": "pixel-low-poly-single-emissive",
+      "emissive": "single-accent"
+    }
+  }
+}

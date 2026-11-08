@@ -32,8 +32,12 @@ async function run() {
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
 
   const consoleLogs = [];
+  const glbResponses = new Map();
   page.on('console', (msg) => consoleLogs.push(`[${msg.type()}] ${msg.text()}`));
   page.on('pageerror', (err) => consoleLogs.push(`[pageerror] ${err.message}`));
+  page.on('response', (response) => {
+    if (response.url().endsWith('.glb')) glbResponses.set(response.url(), response.status());
+  });
 
   console.log('Navigating to http://localhost:4173...');
   await page.goto('http://localhost:4173', { waitUntil: 'networkidle' });
@@ -57,14 +61,38 @@ async function run() {
     player: { x: state.player.x, y: state.player.y, hp: state.player.hp, level: state.player.level }
   });
 
+  const glbStatus = [...glbResponses.entries()];
+  console.log('✅ GLB vertical slice requests verified:', glbStatus);
+  if (!glbStatus.some(([url, status]) => url.endsWith('/taotie.glb') && status === 200)) {
+    throw new Error('taotie.glb was not loaded by the web runtime');
+  }
+  if (!glbStatus.some(([url, status]) => url.endsWith('/qingqiu_01.glb') && status === 200)) {
+    throw new Error('qingqiu_01.glb was not loaded by the web runtime');
+  }
+  await page.evaluate(() => {
+    const renderer = window.__beastEvoGame.renderer3d;
+    renderer.setModelQuality('low');
+    window.advanceTime(50);
+    renderer.setModelQuality('high');
+  });
+  console.log('✅ Model quality profile switch verified: low → high');
+
   // Advance time
   await page.evaluate(() => window.advanceTime(1000));
+  await page.waitForTimeout(150);
   const stateAfter1s = JSON.parse(await page.evaluate(() => window.render_game_to_text()));
   console.log('✅ After advanceTime(1000):', {
     stageElapsedSec: stateAfter1s.stageElapsedSec,
     runTimeSec: stateAfter1s.runTimeSec,
     enemiesCount: stateAfter1s.enemies.length
   });
+  const normalCharacterGlb = [...glbResponses.keys()].find((url) =>
+    /\/(spirit_bug|spirit_rat|mountain_spirit|red_feather_bird|rock_beast)\.glb$/.test(url)
+  );
+  if (!normalCharacterGlb || glbResponses.get(normalCharacterGlb) !== 200) {
+    throw new Error(`No first-stage ordinary enemy GLB loaded: ${JSON.stringify([...glbResponses])}`);
+  }
+  console.log('✅ Ordinary enemy GLB request verified:', normalCharacterGlb);
 
   // Test Dash
   await page.keyboard.press('Space');

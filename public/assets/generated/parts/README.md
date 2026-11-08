@@ -1,11 +1,11 @@
-# Generated Part Sprites
+# Generated 3D Part References
 
-These transparent pixel sprites are the first isolated body-part pass for the playable prototype.
+These files are transparent multi-view low-poly reference boards for the replaceable body-part slots. They remain useful for the art handoff and reward-card previews; all five part GLBs (`fox_mouth`, `nine_tail`, `kui_horn`, `kui_hoof`, `qiongqi_wing`) now live under [`../../models/vertical-slice/`](../../models/vertical-slice/) and are available to the runtime migration.
 
-- `fox_mouth.png` — Fox Mouth head slot.
-- `nine_tail.png` — Nine-Tail tail slot.
-- `kui_horn.png` — Kui Horn head slot.
-- `kui_hoof.png` — Kui Hoof limb slot.
-- `qiongqi_wing.png` — Qiongqi Wing limb slot, used after the first-clear unlock.
+- `fox_mouth.png` — Fox Mouth head slot; wide jaw and ember throat accent.
+- `nine_tail.png` — Nine-Tail tail slot; nine separated tails with a purple energy accent.
+- `kui_horn.png` — Kui Horn head slot; asymmetric thunder horn and cyan charge lines.
+- `kui_hoof.png` — Kui Hoof limb slot; heavy hoof with restrained electric glow.
+- `qiongqi_wing.png` — Qiongqi Wing limb slot; dark feathered wing with red edge light.
 
-The sprites share the same generated sheet and are intended for reward cards, slot previews, and the next layered character pass. They are currently front-facing single-frame art; four-direction animation and final cleanup remain separate art work.
+Each board keeps the ID and slot from `data/parts.json`. Any authored replacement should preserve the same slot mapping, attachment node, local offset, scale, material key, and collision box. The boards are not runtime meshes; the current GLBs are low-poly migration assets and can be replaced without changing the gameplay IDs or socket names.

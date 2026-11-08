@@ -28,6 +28,7 @@
 - **引擎架构升级：** 全仓库已正式完成从 Phaser 2D 向 **Three.js + TypeScript + Vite** 的完整生产级架构迁移。
 - **3D场景与镜头：** 现已实现真正的全屏 3D WebGL 渲染，透视相机支持 0–360° 水平自由偏航旋转、30°–65° 俯仰角限位、滚轮缩放与平滑跟随，按 `R` 可随时回正至角色后方。
 - **3D角色与部位槽位：** 幼年饕餮主体已升级为 3D 低模；神兽部位（狐口、九尾、夔牛雷角、夔牛蹄、穷奇之翼）已实现动态 3D 挂点系统，当玩家吞噬部位后，角色 3D 外观即时发生立体蜕变。
+- **GLB垂直切片：** 第一关的饕餮、九尾狐影、普通敌人及变体、青丘道具、狐口和九尾已生成并接入 `GLTFLoader`；统一提供 `root/body/head/tail/socket_*` 节点与 `idle/run/attack/hit/dash/death` 动画契约，缺失时回退 PNG/程序化表现。
 - **3D关卡环境与特效：** 青丘之野（灵石图腾与玉色雾气）、炎火山（黑曜石地脉与熔岩火隙）、穷奇竞技场（悬浮符文巨石与暗紫虚空）三大 3D 战场及撕咬巨口、追踪火球、落雷光柱、Boss 地面预警圈均已实现 3D 渲染。
 - **数据层与战斗完整性：** 100% 保持 [data/](data/) 下平衡、怪物、技能、部位、分支和多语言配置的一致性；暴食反冲、吞火回响、灼热冲锋等全套构筑联动与数值计算完整保留。
 - **UI与控制：** 响应式东方奇幻风格全屏 HUD（HP/EXP/Boss 血条/技能/分支徽章/兽魂计数器），升级三选一、Boss 部位二选一、部位强化与通关结算弹窗；支持 PC 键鼠与移动端虚拟摇杆+冲刺按钮。
@@ -230,7 +231,7 @@ L -->|是| M[结算与局外收藏]
 
 运行时以 [data/balance.json](data/balance.json) 为全局数值入口，以 [data/creatures.json](data/creatures.json)、[data/skills.json](data/skills.json)、[data/parts.json](data/parts.json)、[data/waves.json](data/waves.json)、[data/stages.json](data/stages.json) 和 [data/growth.json](data/growth.json) 为内容配置。中英文名称在 `data/locales/` 下维护。
 
-当前所有数字仍是首轮测试值。修改数据后运行 `npm run validate:data`，构建前运行 `npm run build`。
+当前所有数字仍是首轮测试值。修改数据后运行 `npm run validate:data`；更换生成图片后运行 `npm run validate:art`；重新生成或替换 GLB 后运行 `npm run validate:glb`；构建前运行 `npm run build`，完整浏览器验收运行 `npm test`。
 
 ## 九、技术架构与3D迁移
 
@@ -304,7 +305,7 @@ L -->|是| M[结算与局外收藏]
 5. 为每个部位配置挂点、局部偏移、缩放、材质和碰撞盒；视觉网格修改不能直接改变战斗数值。
 6. 建立三档 LOD 和低画质替代材质，确保全屏 3D 敌群在真实浏览器设备上稳定运行。
 
-当前已接入的素材见 [public/assets/generated/](public/assets/generated/)，生成源图和裁切预览见 `output/imagegen/`。
+当前生成的 3D 参考板见 [public/assets/generated/](public/assets/generated/)，原始生成板见 `output/imagegen/3d/`，对应关系见 [`public/assets/generated/manifest.json`](public/assets/generated/manifest.json)。GLB 垂直切片资产见 [`public/assets/models/vertical-slice/`](public/assets/models/vertical-slice/)：饕餮、三关 Boss、普通敌人及变体、青丘场景道具和五种可替换部件已经接入 `GLTFLoader`，并按 `socket_head/socket_limb/socket_tail/socket_armor` 挂点替换；加载失败时仍回退到清理后的角色图集和程序化几何。当前 GLB 是可运行的低模中间资产，后续美术生产可以直接替换网格、材质、LOD 和动画而不改玩法 ID。
 
 生成图只作为素材生产步骤，不能替代清稿、授权确认和实机可读性检查。
 
@@ -324,7 +325,10 @@ L -->|是| M[结算与局外收藏]
 | P3 | Three.js 全屏 3D 壳、WebGL 检查、透视相机和 360°水平旋转 | 已完成；窗口缩放、镜头回正、鼠标拖拽、移动端触控和旋转验收通过 |
 | P4 | 青丘之野 3D 纵向切片、3D 玩家、普通敌人、兽魂和升级 | 已完成；3D 战斗、兽魂吸收和升级三选一已接入 |
 | P5 | 九尾狐影 3D Boss、部位模型、遮挡提示、部位二选一和局内换装 | 已完成；Boss 预警、离屏雷达、部位 3D 预览和装备验收通过 |
-| P6 | 炎火山、穷奇竞技场、三关结算、性能、本地化和音效 | 首轮完成；三关、结算、音效、双语、天赋和图鉴已完成，真实设备 profiling、LOD/GLB 资产流水线仍可继续加强 |
+| P6 | 炎火山、穷奇竞技场、三关结算、性能、本地化和音效 | 首轮完成；三关、结算、音效、双语、天赋和图鉴已完成，真实设备 profiling 和最终高精度 LOD 资产仍可继续加强 |
+| P7.1 | 第一关 GLB 垂直切片 | 已完成可运行中间资产：玩家、第一关 Boss、普通敌人及变体、青丘道具、狐口、九尾；包含稳定节点、挂点和角色动画契约，运行时保留 PNG/程序化回退 |
+| P7.2 | 第一关普通敌人及变体 GLB | 已完成；12 个普通/精英/变体模型已生成、注册并接入运行时，覆盖 GLB 200、节点、动画和 PNG 回退验收 |
+| P7.3 | 第二/第三关 Boss、部件质量契约 | 已完成中间资产；`kui_spirit`、`qiongqi`、`kui_horn`、`kui_hoof`、`qiongqi_wing` 已接入，manifest 已记录 base LOD、combat LOD 目标和材质质量档位，正式 LOD 仍待美术生产 |
 
 **首版不做：** 多人、联网 PVP、开放世界、复杂多层迷宫、完整空中战斗、几十种异兽、动态骨骼重建、复杂装备经济。
 

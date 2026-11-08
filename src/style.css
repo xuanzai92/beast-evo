@@ -575,6 +575,27 @@ canvas {
   outline: none;
 }
 
+.generated-art-viewport {
+  background:
+    radial-gradient(circle at 50% 45%, rgba(115, 255, 199, 0.1), transparent 55%),
+    linear-gradient(135deg, rgba(30, 20, 48, 0.96), rgba(10, 8, 18, 0.98));
+}
+
+.generated-art-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  pointer-events: none;
+}
+
+.generated-part-image {
+  object-fit: contain;
+  object-position: center;
+  padding: 4px 8px;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.45));
+}
+
 .preview-hint {
   font-size: 10px;
   color: #c4b5fd;
@@ -875,6 +896,19 @@ canvas {
   width: 100% !important;
   height: 100% !important;
   outline: none;
+}
+
+.bestiary-preview-viewport.generated-art-viewport {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(115, 255, 199, 0.14), transparent 54%),
+    linear-gradient(135deg, rgba(34, 24, 58, 0.98), rgba(10, 8, 18, 0.98));
+}
+
+.generated-character-image {
+  object-fit: cover;
+  object-position: 38% center;
+  transform: scale(1.08);
+  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.52));
 }
 
 .bestiary-info-block {

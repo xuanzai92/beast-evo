@@ -1,182 +1,14 @@
-import * as THREE from 'three';
 import type { UpgradeOption, PartOffer, PartUpgradeOption, PlayerState, Enemy, BranchId, PartId } from './types';
 import { localize, t, getLanguage, setLanguage, bestiaryList, bestiaryMap, creatureMap } from './data';
-import { Renderer3D } from './renderer3d';
 import { audio, AudioManager } from './audio';
 import type { CameraController } from './camera';
 import { MetaManager, Talents, TALENT_MAX_LEVELS } from './meta';
-
-class MiniPartPreview {
-  private renderer: THREE.WebGLRenderer;
-  private scene: THREE.Scene;
-  private camera: THREE.PerspectiveCamera;
-  private animId = 0;
-  private rootGroup: THREE.Group;
-  private isDragging = false;
-  private lastX = 0;
-
-  constructor(container: HTMLElement, partId: PartId) {
-    const width = container.clientWidth || 180;
-    const height = 120;
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 50);
-    this.camera.position.set(0, 0.8, 3.6);
-    this.camera.lookAt(0, 0, 0);
-
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(this.renderer.domElement);
-
-    const ambient = new THREE.AmbientLight(0xffffff, 1.8);
-    this.scene.add(ambient);
-
-    const dirLight = new THREE.DirectionalLight(0xffeedd, 2.2);
-    dirLight.position.set(5, 8, 5);
-    this.scene.add(dirLight);
-
-    this.rootGroup = new THREE.Group();
-    const mesh = Renderer3D.createPartMesh(partId);
-    if (mesh) {
-      if (partId === 'fox_mouth') {
-        mesh.position.set(0, -1.2, -1.4);
-      } else if (partId === 'nine_tail') {
-        mesh.position.set(0, -1.0, 0.6);
-      } else if (partId === 'kui_horn') {
-        mesh.position.set(0, -2.1, -0.7);
-      } else if (partId === 'kui_hoof') {
-        mesh.position.set(0, 0, 0);
-      } else if (partId === 'qiongqi_wing') {
-        mesh.position.set(0, -1.4, 0);
-      }
-      this.rootGroup.add(mesh);
-    }
-    this.scene.add(this.rootGroup);
-
-    container.addEventListener('pointerdown', (e) => {
-      this.isDragging = true;
-      this.lastX = e.clientX;
-    });
-    window.addEventListener('pointermove', (e) => {
-      if (this.isDragging) {
-        const dx = e.clientX - this.lastX;
-        this.lastX = e.clientX;
-        this.rootGroup.rotation.y += dx * 0.02;
-      }
-    });
-    window.addEventListener('pointerup', () => {
-      this.isDragging = false;
-    });
-
-    const animate = () => {
-      this.animId = requestAnimationFrame(animate);
-      if (!this.isDragging) {
-        this.rootGroup.rotation.y += 0.018;
-      }
-      this.renderer.render(this.scene, this.camera);
-    };
-    animate();
-  }
-
-  public dispose() {
-    cancelAnimationFrame(this.animId);
-    this.renderer.dispose();
-    while (this.scene.children.length > 0) {
-      this.scene.remove(this.scene.children[0]);
-    }
-    if (this.renderer.domElement.parentElement) {
-      this.renderer.domElement.parentElement.removeChild(this.renderer.domElement);
-    }
-  }
-}
-
-class BestiaryPreview {
-  private renderer: THREE.WebGLRenderer;
-  private scene: THREE.Scene;
-  private camera: THREE.PerspectiveCamera;
-  private animId = 0;
-  private rootGroup: THREE.Group;
-  private isDragging = false;
-  private lastX = 0;
-
-  constructor(container: HTMLElement, creatureId: string) {
-    const width = container.clientWidth || 320;
-    const height = container.clientHeight || 200;
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 50);
-    this.camera.position.set(0, 2.2, 5.6);
-    this.camera.lookAt(0, 1.2, 0);
-
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(this.renderer.domElement);
-
-    const ambient = new THREE.AmbientLight(0xffffff, 1.8);
-    this.scene.add(ambient);
-
-    const dirLight = new THREE.DirectionalLight(0xffeedd, 2.2);
-    dirLight.position.set(6, 10, 6);
-    this.scene.add(dirLight);
-
-    // Pedestal ring
-    const pedestal = new THREE.Mesh(
-      new THREE.CylinderGeometry(2.4, 2.6, 0.2, 24),
-      new THREE.MeshStandardMaterial({ color: 0x221832, roughness: 0.8, flatShading: true })
-    );
-    pedestal.position.y = -0.1;
-    this.scene.add(pedestal);
-
-    this.rootGroup = new THREE.Group();
-    const mesh = Renderer3D.createBestiaryMesh(creatureId);
-    if (mesh) {
-      this.rootGroup.add(mesh);
-    }
-    this.scene.add(this.rootGroup);
-
-    container.addEventListener('pointerdown', (e) => {
-      this.isDragging = true;
-      this.lastX = e.clientX;
-    });
-    window.addEventListener('pointermove', (e) => {
-      if (this.isDragging) {
-        const dx = e.clientX - this.lastX;
-        this.lastX = e.clientX;
-        this.rootGroup.rotation.y += dx * 0.02;
-      }
-    });
-    window.addEventListener('pointerup', () => {
-      this.isDragging = false;
-    });
-
-    const animate = () => {
-      this.animId = requestAnimationFrame(animate);
-      if (!this.isDragging) {
-        this.rootGroup.rotation.y += 0.015;
-      }
-      this.renderer.render(this.scene, this.camera);
-    };
-    animate();
-  }
-
-  public dispose() {
-    cancelAnimationFrame(this.animId);
-    this.renderer.dispose();
-    while (this.scene.children.length > 0) {
-      this.scene.remove(this.scene.children[0]);
-    }
-    if (this.renderer.domElement.parentElement) {
-      this.renderer.domElement.parentElement.removeChild(this.renderer.domElement);
-    }
-  }
-}
 
 export class UIController {
   private root: HTMLElement;
   public hudContainer: HTMLDivElement;
   public modalContainer: HTMLDivElement;
   public radarLayer: HTMLDivElement;
-  private previewInstances: MiniPartPreview[] = [];
 
   // Top HUD elements
   private hpFill: HTMLDivElement;
@@ -219,7 +51,6 @@ export class UIController {
   private cameraPointerId: number | null = null;
   private lastCameraX = 0;
   private lastCameraY = 0;
-  private bestiaryPreview: BestiaryPreview | null = null;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -668,10 +499,6 @@ export class UIController {
     let selectedId = bestiaryList[0].id;
 
     const render = () => {
-      if (this.bestiaryPreview) {
-        this.bestiaryPreview.dispose();
-        this.bestiaryPreview = null;
-      }
 
       const isZh = getLanguage() === 'zh';
       const selected = bestiaryMap.get(selectedId) || bestiaryList[0];
@@ -706,8 +533,15 @@ export class UIController {
 
             <div class="bestiary-detail">
               ${isUnlocked ? `
-                <div class="bestiary-preview-viewport" id="bestiary-viewport"></div>
-                <div class="preview-hint">${t('drag_preview_hint')}</div>
+                <div class="bestiary-preview-viewport generated-art-viewport">
+                  <img
+                    class="generated-art-image generated-character-image"
+                    src="/assets/generated/characters/${selected.id}.png"
+                    alt="${isZh ? selected.aliasZh : selected.aliasEn} 3D reference"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="preview-hint">四视图 3D 美术参考</div>
 
                 <div class="bestiary-info-block">
                   <div class="bestiary-name-row">
@@ -748,13 +582,6 @@ export class UIController {
           </div>
         </div>
       `;
-
-      if (isUnlocked) {
-        const vp = this.modalContainer.querySelector('#bestiary-viewport') as HTMLElement;
-        if (vp) {
-          this.bestiaryPreview = new BestiaryPreview(vp, selected.id);
-        }
-      }
 
       this.modalContainer.querySelectorAll('.bestiary-list-item').forEach((item) => {
         item.addEventListener('click', (e) => {
@@ -945,8 +772,15 @@ export class UIController {
               <div class="card-key">${idx + 1}</div>
               <div class="card-kind">分支: ${localize('branch.' + offer.branch + '.name', offer.branch)}</div>
               <h3 class="card-title">${offer.title}</h3>
-              <div class="part-preview-viewport" id="preview-viewport-${idx}"></div>
-              <div class="preview-hint">${t('drag_preview_hint')}</div>
+              <div class="part-preview-viewport generated-art-viewport">
+                <img
+                  class="generated-art-image generated-part-image"
+                  src="/assets/generated/parts/${offer.id}.png"
+                  alt="${offer.title} 3D reference"
+                  loading="lazy"
+                />
+              </div>
+              <div class="preview-hint">多视图部位参考</div>
               <p class="card-desc">${offer.effect}</p>
               ${offer.replacement ? `<div class="card-replace">${offer.replacement}</div>` : ''}
             </div>
@@ -956,14 +790,6 @@ export class UIController {
         </div>
       </div>
     `;
-
-    // Initialize 3D Turntable Previews
-    offers.forEach((offer, idx) => {
-      const viewport = this.modalContainer.querySelector(`#preview-viewport-${idx}`) as HTMLElement;
-      if (viewport) {
-        this.previewInstances.push(new MiniPartPreview(viewport, offer.id));
-      }
-    });
 
     this.modalContainer.querySelectorAll('.select-card').forEach((card) => {
       card.addEventListener('click', (e) => {
@@ -1058,12 +884,6 @@ export class UIController {
   }
 
   public hideModal() {
-    if (this.bestiaryPreview) {
-      this.bestiaryPreview.dispose();
-      this.bestiaryPreview = null;
-    }
-    this.previewInstances.forEach((p) => p.dispose());
-    this.previewInstances = [];
     this.modalContainer.classList.add('hidden');
     this.modalContainer.innerHTML = '';
   }

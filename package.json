@@ -7,6 +7,9 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "validate:data": "node scripts/validate-data.mjs",
+    "validate:art": "node scripts/validate-generated-assets.mjs",
+    "validate:glb": "node scripts/validate-glb-assets.mjs",
+    "generate:glb": "node scripts/generate-vertical-slice-glb.mjs",
     "test": "node scripts/test-three-runtime.mjs && node scripts/test-three-full-gameplay.mjs && node scripts/test-three-p2-features.mjs"
   },
   "dependencies": {

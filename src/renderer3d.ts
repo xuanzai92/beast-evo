@@ -1,5 +1,18 @@
 import * as THREE from 'three';
 import type { Enemy, SoulDrop, DangerZone, Projectile, PartId, Vec2 } from './types';
+import {
+  isGeneratedTextureUsable,
+  loadGeneratedTexture,
+  loadGeneratedSprite,
+  setTurntableYaw
+} from './artAssets';
+import {
+  cloneModelAsset,
+  getModelAssetAnimations,
+  loadModelAsset,
+  setModelQuality as setLoadedModelQuality,
+  type ModelQuality
+} from './modelAssets';
 
 // Scale factor: maps 2D simulation pixels (width 360, height 640) into 3D world units
 export const WORLD_SCALE = 0.085;
@@ -34,13 +47,22 @@ export class Renderer3D {
   private playerHeadMesh!: THREE.Mesh;
   private playerLegs: THREE.Mesh[] = [];
   private playerPartNodes = new Map<PartId, THREE.Object3D>();
+  private playerPartModelNodes = new Map<PartId, THREE.Object3D>();
+  private playerSockets = new Map<string, THREE.Object3D>();
 
   // Entity Meshes Maps
   private enemyMeshes = new Map<string, THREE.Group>();
   private soulMeshes = new Map<string, THREE.Group>();
   private dangerMeshes = new Map<string, THREE.Group>();
   private projectileMeshes = new Map<string, THREE.Group>();
+  private enemyHealthSnapshot = new Map<string, number>();
   private vfxList: Array<{ group: THREE.Group; ttl: number; maxTtl: number; update?: (t: number) => void }> = [];
+  private generatedSprites = new Set<THREE.Sprite>();
+  private generatedPlayerSprite: THREE.Sprite | null = null;
+  private modelMixers = new Map<THREE.Object3D, THREE.AnimationMixer>();
+  private modelActions = new Map<THREE.Object3D, Map<string, THREE.AnimationAction>>();
+  private stageModelRoot: THREE.Group | null = null;
+  private stageModelLoadToken: object | null = null;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -87,6 +109,8 @@ export class Renderer3D {
     // Build Player 3D Mesh
     this.playerGroup = this.createPlayerModel();
     this.scene.add(this.playerGroup);
+    this.attachGeneratedCharacterSprite(this.playerGroup, 'taotie', 3.6, 0.08, true);
+    this.attachModelAsset(this.playerGroup, 'taotie', 0, 1.35, true);
 
     this.setStage(0);
   }
@@ -95,10 +119,270 @@ export class Renderer3D {
     this.renderer.setSize(width, height);
   }
 
+  /** Apply the runtime material/shadow profile to loaded and future GLBs. */
+  public setModelQuality(quality: ModelQuality) {
+    setLoadedModelQuality(quality);
+  }
+
+  /** Resolve an enemy instance ID back to the stable creature asset ID. */
+  private resolveCreatureAssetId(instanceId: string): string | null {
+    const knownIds = [
+      'spirit_bug',
+      'spirit_rat',
+      'mountain_spirit',
+      'red_feather_bird',
+      'rock_beast',
+      'reinforced_spirit_rat',
+      'reinforced_mountain_spirit',
+      'corrupted_spirit_bug',
+      'corrupted_red_feather_bird',
+      'heavy_rock_beast',
+      'elite_mountain_spirit',
+      'elite_rock_beast',
+      'nine_tail_shadow',
+      'kui_spirit',
+      'qiongqi'
+    ];
+    return knownIds.find((id) => instanceId === id || instanceId.startsWith(`${id}_`)) ?? null;
+  }
+
+  /** Attach a generated four-view board while preserving the procedural fallback. */
+  private attachGeneratedCharacterSprite(
+    group: THREE.Group,
+    assetId: string,
+    size: number,
+    localY: number,
+    hideProceduralWhenReady = false
+  ) {
+    void loadGeneratedSprite('characters', assetId, {
+      size,
+      alphaTest: 0.04,
+      depthWrite: false
+    }).then((sprite) => {
+      const texture = (sprite.material as THREE.SpriteMaterial).map;
+      if (!isGeneratedTextureUsable(texture)) {
+        texture?.dispose();
+        sprite.material.dispose();
+        return;
+      }
+
+      // A GLB may have finished while this PNG was loading. In that case the
+      // model owns the visual and the late impostor should be disposed.
+      if (group.userData.generatedModel) {
+        texture?.dispose();
+        sprite.material.dispose();
+        return;
+      }
+
+      sprite.center.set(0.5, 0.04);
+      sprite.position.set(0, localY, 0);
+      sprite.renderOrder = 3;
+      sprite.userData.turntable = true;
+      sprite.userData.assetId = assetId;
+      group.add(sprite);
+      this.generatedSprites.add(sprite);
+
+      if (hideProceduralWhenReady) {
+        for (const child of group.children) {
+          if (child !== sprite && !child.userData.generatedPart && !child.userData.generatedPartSocket) child.visible = false;
+        }
+        if (group === this.playerGroup) this.generatedPlayerSprite = sprite;
+      } else {
+        const mainMesh = group.userData.mainMesh as THREE.Object3D | undefined;
+        if (mainMesh) mainMesh.visible = false;
+      }
+    }).catch(() => {
+      // The procedural mesh remains visible when a generated asset cannot load.
+    });
+  }
+
+  /**
+   * Upgrade a character group to a GLB when the vertical-slice model exists.
+   * The request is deliberately asynchronous: PNG/procedural visuals render
+   * immediately and are only hidden after the model has loaded successfully.
+   */
+  private attachModelAsset(
+    group: THREE.Group,
+    assetId: string,
+    localY = 0,
+    scale = 1,
+    hideFallback = true
+  ) {
+    if (group.userData.modelLoadingAsset || group.userData.generatedModel) return;
+    const loadToken = {};
+    group.userData.modelLoadingAsset = assetId;
+    group.userData.modelLoadToken = loadToken;
+
+    void Promise.all([
+      loadModelAsset('characters', assetId),
+      getModelAssetAnimations('characters', assetId)
+    ]).then(([source, clips]) => {
+      if (!source || group.userData.modelLoadToken !== loadToken || !group.parent) {
+        if (group.userData.modelLoadToken === loadToken) group.userData.modelLoadingAsset = null;
+        return;
+      }
+      const model = cloneModelAsset(source);
+      if (!model) return;
+
+      model.position.y = localY;
+      model.scale.setScalar(scale);
+      model.userData.generatedModel = true;
+      model.userData.assetId = assetId;
+      group.add(model);
+      group.userData.generatedModel = model;
+      group.userData.modelLoadingAsset = null;
+
+      // Remove the PNG impostor and hide procedural geometry only after the
+      // GLB is ready. Equipped procedural part nodes stay visible for now.
+      if (hideFallback) {
+        for (const child of [...group.children]) {
+          if (child.userData.generatedPartSocket) {
+            child.visible = true;
+            continue;
+          }
+          if (child === model || child.userData.generatedPart) continue;
+          if (child.type === 'Sprite') {
+            const sprite = child as THREE.Sprite;
+            this.generatedSprites.delete(sprite);
+            (sprite.material as THREE.SpriteMaterial).map?.dispose();
+            sprite.material.dispose();
+            group.remove(sprite);
+          } else {
+            child.visible = false;
+          }
+        }
+        if (group === this.playerGroup) this.generatedPlayerSprite = null;
+      }
+
+      const mixer = new THREE.AnimationMixer(model);
+      const actions = new Map<string, THREE.AnimationAction>();
+      for (const clip of clips) {
+        const action = mixer.clipAction(clip);
+        actions.set(clip.name, action);
+      }
+      this.modelMixers.set(model, mixer);
+      this.modelActions.set(model, actions);
+
+      // All vertical-slice models provide idle. If a future export omits it,
+      // the first available clip still keeps the mixer path exercised.
+      const idle = actions.get('idle') ?? actions.values().next().value;
+      if (idle) {
+        idle.play();
+        model.userData.activeAnimation = idle.getClip().name;
+      }
+    }).catch(() => {
+      // Missing/invalid GLB keeps the PNG or procedural fallback visible.
+      group.userData.modelLoadingAsset = null;
+    });
+  }
+
+  private disposeModelInGroup(group: THREE.Object3D) {
+    for (const child of [...group.children]) {
+      if (!child.userData.generatedModel) continue;
+      const mixer = this.modelMixers.get(child);
+      mixer?.stopAllAction();
+      this.modelMixers.delete(child);
+      this.modelActions.delete(child);
+      group.remove(child);
+    }
+    if (group.userData.generatedModel) group.userData.generatedModel = null;
+    group.userData.modelLoadToken = null;
+    group.userData.modelLoadingAsset = null;
+  }
+
+  private updateModelAnimations(dt: number) {
+    for (const [model, mixer] of this.modelMixers.entries()) {
+      if (!model.parent) {
+        this.modelMixers.delete(model);
+        this.modelActions.delete(model);
+        continue;
+      }
+      mixer.update(dt);
+    }
+  }
+
+  private setModelAnimation(group: THREE.Group, name: string) {
+    const model = group.userData.generatedModel as THREE.Object3D | undefined;
+    if (!model || model.userData.activeAnimation === name) return;
+    const actions = this.modelActions.get(model);
+    const next = actions?.get(name);
+    if (!next) return;
+    const currentName = model.userData.activeAnimation as string | undefined;
+    const current = currentName ? actions?.get(currentName) : undefined;
+    current?.fadeOut(0.1);
+    next.reset().fadeIn(0.1).play();
+    model.userData.activeAnimation = name;
+  }
+
+  /** Add a generated VFX board to an existing effect group with procedural fallback. */
+  private attachGeneratedVfxSprite(group: THREE.Group, assetId: string, size: number) {
+    void loadGeneratedSprite('vfx', assetId, {
+      size,
+      alphaTest: 0.02,
+      depthWrite: false,
+      depthTest: false
+    }).then((sprite) => {
+      const texture = (sprite.material as THREE.SpriteMaterial).map;
+      if (!isGeneratedTextureUsable(texture)) {
+        texture?.dispose();
+        sprite.material.dispose();
+        return;
+      }
+      sprite.center.set(0.5, 0.5);
+      sprite.position.set(0, 0.05, 0);
+      sprite.renderOrder = 4;
+      sprite.userData.generatedVfx = assetId;
+      for (const child of group.children) child.visible = false;
+      group.add(sprite);
+    }).catch(() => {
+      // Keep the procedural effect if the generated board is unavailable.
+    });
+  }
+
+  private disposeGeneratedSpritesInGroup(group: THREE.Object3D) {
+    group.traverse((child) => {
+      if (child.type !== 'Sprite') return;
+      const sprite = child as THREE.Sprite;
+      this.generatedSprites.delete(sprite);
+      const material = sprite.material as THREE.SpriteMaterial;
+      material.map?.dispose();
+      material.dispose();
+    });
+  }
+
+  /** Switch turntable frames from the current camera direction. */
+  private updateGeneratedSpriteFrames(camera: THREE.Camera) {
+    const cameraPosition = camera.getWorldPosition(new THREE.Vector3());
+    const worldPosition = new THREE.Vector3();
+    const parentQuaternion = new THREE.Quaternion();
+    const parentEuler = new THREE.Euler();
+    for (const sprite of this.generatedSprites) {
+      if (!sprite.visible || !sprite.parent) continue;
+      sprite.getWorldPosition(worldPosition);
+      const cameraYaw = Math.atan2(cameraPosition.x - worldPosition.x, cameraPosition.z - worldPosition.z);
+      sprite.parent.getWorldQuaternion(parentQuaternion);
+      parentEuler.setFromQuaternion(parentQuaternion, 'YXZ');
+      const parentYaw = parentEuler.y;
+      const texture = (sprite.material as THREE.SpriteMaterial).map;
+      if (!texture) continue;
+      const frame = Math.floor((((cameraYaw - parentYaw) / (Math.PI * 2)) % 1 + 1) % 1 * 4 + 0.5) % 4;
+      if (sprite.userData.turntableFrame === frame) continue;
+      setTurntableYaw(texture, cameraYaw - parentYaw, 4);
+      sprite.userData.turntableFrame = frame;
+    }
+  }
+
   // --- STAGE ENVIRONMENT BUILDER ---
   public setStage(stageIndex: number) {
     if (this.currentStageIndex === stageIndex) return;
     this.currentStageIndex = stageIndex;
+    this.scene.background = null;
+
+    if (this.stageModelRoot) {
+      this.stageGroup.remove(this.stageModelRoot);
+      this.stageModelRoot = null;
+    }
+    this.stageModelLoadToken = null;
 
     // Clear old stage
     while (this.stageGroup.children.length > 0) {
@@ -114,6 +398,7 @@ export class Renderer3D {
       this.ambientLight.color.setHex(0xb5e2d5);
       this.dirLight.color.setHex(0xfffae8);
       this.buildQingqiuStage();
+      this.attachStageModel('qingqiu_01');
     } else if (stageIndex === 1) {
       // Stage 2: Yanhuo Mountain (炎火山) - Volcanic / Obsidian / Magma
       this.scene.fog = new THREE.FogExp2(0x271410, 0.024);
@@ -129,6 +414,34 @@ export class Renderer3D {
       this.dirLight.color.setHex(0xe85555);
       this.buildQiongqiStage();
     }
+
+    const stageAssetId = stageIndex === 0 ? 'qingqiu_01' : stageIndex === 1 ? 'qingqiu_02' : 'qingqiu_03';
+    const stageFallback = stageIndex === 0 ? 0x131f1c : stageIndex === 1 ? 0x271410 : 0x150f24;
+    void loadGeneratedTexture('stages', stageAssetId, stageFallback).then((texture) => {
+      if (this.currentStageIndex !== stageIndex || !isGeneratedTextureUsable(texture)) return;
+      this.scene.background = texture;
+    });
+  }
+
+  /** Add the first stage's GLB props without removing the procedural fallback. */
+  private attachStageModel(assetId: string) {
+    const loadToken = {};
+    this.stageModelLoadToken = loadToken;
+    void loadModelAsset('stages', assetId).then((source) => {
+      if (!source || this.currentStageIndex !== 0 || this.stageModelLoadToken !== loadToken) {
+        if (this.stageModelLoadToken === loadToken) this.stageModelLoadToken = null;
+        return;
+      }
+      const model = cloneModelAsset(source);
+      if (!model) return;
+      model.name = `${assetId}_glb`;
+      model.userData.generatedModel = true;
+      model.userData.assetId = assetId;
+      this.stageGroup.add(model);
+      this.stageModelRoot = model;
+    }).catch(() => {
+      // The procedural stage remains available when the GLB is unavailable.
+    });
   }
 
   private buildQingqiuStage() {
@@ -331,7 +644,37 @@ export class Renderer3D {
       return leg;
     });
 
+    const sockets: Array<[string, THREE.Vector3]> = [
+      ['socket_head', new THREE.Vector3(0, 1.35, 0.95)],
+      ['socket_limb', new THREE.Vector3(0, 0.35, 0.35)],
+      ['socket_tail', new THREE.Vector3(0, 0.85, -0.85)],
+      ['socket_armor', new THREE.Vector3(0, 1.0, 0)]
+    ];
+    for (const [name, position] of sockets) {
+      const socket = new THREE.Object3D();
+      socket.name = name;
+      socket.position.copy(position);
+      socket.userData.generatedPartSocket = true;
+      group.add(socket);
+      this.playerSockets.set(name, socket);
+    }
+
     return group;
+  }
+
+  private getPlayerSocket(partId: PartId): THREE.Object3D {
+    const socketName = partId === 'fox_mouth'
+      ? 'socket_head'
+      : partId === 'nine_tail'
+        ? 'socket_tail'
+        : partId === 'kui_horn'
+          ? 'socket_head'
+          : partId === 'kui_hoof'
+            ? 'socket_limb'
+            : partId === 'qiongqi_wing'
+              ? 'socket_limb'
+            : 'socket_limb';
+    return this.playerSockets.get(socketName) ?? this.playerGroup;
   }
 
   // Attach / update modular parts on player
@@ -339,7 +682,10 @@ export class Renderer3D {
     // Remove existing part meshes
     for (const [partId, node] of this.playerPartNodes.entries()) {
       if (!Object.values(parts).includes(partId)) {
-        this.playerGroup.remove(node);
+        node.parent?.remove(node);
+        const modelNode = this.playerPartModelNodes.get(partId);
+        modelNode?.parent?.remove(modelNode);
+        this.playerPartModelNodes.delete(partId);
         this.playerPartNodes.delete(partId);
       }
     }
@@ -350,10 +696,30 @@ export class Renderer3D {
 
       const partNode = Renderer3D.createPartMesh(partId);
       if (partNode) {
-        this.playerGroup.add(partNode);
+        partNode.userData.generatedPart = true;
+        this.getPlayerSocket(partId).add(partNode);
         this.playerPartNodes.set(partId, partNode);
+        if (partId === 'fox_mouth' || partId === 'nine_tail' || partId === 'kui_horn' || partId === 'kui_hoof' || partId === 'qiongqi_wing') {
+          this.attachModelPartAsset(partId, partNode);
+        }
       }
     }
+  }
+
+  private attachModelPartAsset(partId: PartId, fallbackNode: THREE.Object3D) {
+    void loadModelAsset('parts', partId).then((source) => {
+      if (!source || this.playerPartNodes.get(partId) !== fallbackNode) return;
+      const model = cloneModelAsset(source);
+      if (!model) return;
+      model.userData.generatedModel = true;
+      model.userData.assetId = partId;
+      model.scale.setScalar(partId === 'fox_mouth' ? 1.05 : 1);
+      this.getPlayerSocket(partId).add(model);
+      fallbackNode.visible = false;
+      this.playerPartModelNodes.set(partId, model);
+    }).catch(() => {
+      // Keep the procedural part when the GLB is unavailable.
+    });
   }
 
   public static createPartMesh(partId: PartId): THREE.Object3D {
@@ -702,6 +1068,9 @@ export class Renderer3D {
     const angle = Math.atan2(facing.x, facing.y);
     this.playerGroup.rotation.y = angle;
 
+    this.setModelAnimation(this.playerGroup, isDashing ? 'dash' : isMoving ? 'run' : 'idle');
+    this.updateModelAnimations(dt);
+
     // Movement / Dash Animation
     if (isDashing) {
       this.playerGroup.scale.set(1.4, 0.6, 1.5);
@@ -730,8 +1099,11 @@ export class Renderer3D {
     // Remove dead enemy meshes
     for (const [id, mesh] of this.enemyMeshes.entries()) {
       if (!aliveIds.has(id)) {
+        this.disposeGeneratedSpritesInGroup(mesh);
+        this.disposeModelInGroup(mesh);
         this.scene.remove(mesh);
         this.enemyMeshes.delete(id);
+        this.enemyHealthSnapshot.delete(id);
       }
     }
 
@@ -744,8 +1116,16 @@ export class Renderer3D {
         this.enemyMeshes.set(enemy.id, group);
       }
 
+      this.setModelAnimation(group, enemy.damageCooldown > 0 ? 'hit' : 'idle');
+
       const worldPos = simToWorld(enemy.x, enemy.y);
       group.position.set(worldPos.x, worldPos.y, worldPos.z);
+
+      const previousHealth = this.enemyHealthSnapshot.get(enemy.id);
+      if (previousHealth !== undefined && enemy.health < previousHealth) {
+        this.triggerHitFx(enemy.x, enemy.y);
+      }
+      this.enemyHealthSnapshot.set(enemy.id, enemy.health);
 
       // Hit / Burn / Stun visual feedback
       const mat = (group.userData.mainMesh as THREE.Mesh)?.material as THREE.MeshStandardMaterial;
@@ -762,6 +1142,24 @@ export class Renderer3D {
         } else {
           mat.emissive.setHex(group.userData.originalEmissive || 0x000000);
           mat.emissiveIntensity = group.userData.originalEmissiveIntensity || 0;
+        }
+      }
+
+      const generatedSprite = group.children.find((child) => child.userData.generatedAsset) as THREE.Sprite | undefined;
+      if (generatedSprite) {
+        const spriteMaterial = generatedSprite.material as THREE.SpriteMaterial;
+        if (enemy.damageCooldown > 0) {
+          spriteMaterial.color.setHex(0xffffff);
+          spriteMaterial.opacity = 1;
+        } else if (enemy.burnRemaining > 0) {
+          spriteMaterial.color.setHex(0xffb08a);
+          spriteMaterial.opacity = 1;
+        } else if (enemy.stunRemaining > 0) {
+          spriteMaterial.color.setHex(0x9defff);
+          spriteMaterial.opacity = 1;
+        } else {
+          spriteMaterial.color.setHex(0xffffff);
+          spriteMaterial.opacity = 1;
         }
       }
     }
@@ -859,6 +1257,17 @@ export class Renderer3D {
       originalEmissiveIntensity: isBoss ? 0.7 : 0
     };
 
+    const assetId = this.resolveCreatureAssetId(enemy.id);
+    if (assetId) {
+      const spriteSize = isBoss ? 6.4 : isElite ? 3.8 : Math.max(2.25, enemy.radius * WORLD_SCALE * 2.8);
+      const spriteY = enemy.id.includes('bird') ? 0.9 : 0.08;
+      this.attachGeneratedCharacterSprite(group, assetId, spriteSize, spriteY, true);
+      const modelScale = isBoss ? 1.55 : isElite ? 1.2 : 0.9;
+      if (!isBoss || assetId === 'nine_tail_shadow' || assetId === 'kui_spirit' || assetId === 'qiongqi') {
+        this.attachModelAsset(group, assetId, 0, modelScale, true);
+      }
+    }
+
     return group;
   }
 
@@ -868,6 +1277,7 @@ export class Renderer3D {
 
     for (const [id, group] of this.soulMeshes.entries()) {
       if (!currentIds.has(id)) {
+        this.disposeGeneratedSpritesInGroup(group);
         this.scene.remove(group);
         this.soulMeshes.delete(id);
       }
@@ -887,6 +1297,7 @@ export class Renderer3D {
         group = new THREE.Group();
         const gem = new THREE.Mesh(new THREE.OctahedronGeometry(0.32), soulMat);
         group.add(gem);
+        this.attachGeneratedVfxSprite(group, 'soul_crystal', 1.25);
         this.scene.add(group);
         this.soulMeshes.set(soul.id, group);
       }
@@ -904,6 +1315,7 @@ export class Renderer3D {
 
     for (const [id, mesh] of this.dangerMeshes.entries()) {
       if (!currentIds.has(id)) {
+        this.disposeGeneratedSpritesInGroup(mesh);
         this.scene.remove(mesh);
         this.dangerMeshes.delete(id);
       }
@@ -930,6 +1342,7 @@ export class Renderer3D {
         );
         fill.rotation.x = -Math.PI / 2;
         group.add(fill);
+        this.attachGeneratedVfxSprite(group, 'danger_zone', radius3D * 1.5);
 
         this.scene.add(group);
         this.dangerMeshes.set(zone.id, group);
@@ -953,6 +1366,7 @@ export class Renderer3D {
 
     for (const [id, group] of this.projectileMeshes.entries()) {
       if (!currentIds.has(id)) {
+        this.disposeGeneratedSpritesInGroup(group);
         this.scene.remove(group);
         this.projectileMeshes.delete(id);
       }
@@ -971,6 +1385,7 @@ export class Renderer3D {
         group = new THREE.Group();
         const sphere = new THREE.Mesh(new THREE.DodecahedronGeometry(0.35), fireMat);
         group.add(sphere);
+        this.attachGeneratedVfxSprite(group, 'fireball', 1.55);
         this.scene.add(group);
         this.projectileMeshes.set(p.id, group);
       }
@@ -981,6 +1396,23 @@ export class Renderer3D {
   }
 
   // Spawn 3D Visual FX (e.g. Thunder strike, Devour bite, Explosion)
+  public triggerHitFx(simX: number, simY: number) {
+    const pos = simToWorld(simX, simY);
+    const group = new THREE.Group();
+    group.position.set(pos.x, 0.9, pos.z);
+    this.attachGeneratedVfxSprite(group, 'hit_burst', 1.7);
+    this.scene.add(group);
+    this.vfxList.push({
+      group,
+      ttl: 0.2,
+      maxTtl: 0.2,
+      update: (t) => {
+        const factor = Math.max(0, t / 0.2);
+        group.scale.setScalar(1 + (1 - factor) * 0.35);
+      }
+    });
+  }
+
   public triggerBiteFx(simX: number, simY: number, facing: Vec2) {
     const pos = simToWorld(simX, simY);
     const group = new THREE.Group();
@@ -1004,6 +1436,7 @@ export class Renderer3D {
     rightJaw.position.set(-1.1, 0, 1.2);
     rightJaw.rotation.z = 0.5;
     group.add(rightJaw);
+    this.attachGeneratedVfxSprite(group, 'bite_jaw', 3.1);
 
     this.scene.add(group);
     this.vfxList.push({
@@ -1038,6 +1471,7 @@ export class Renderer3D {
     ring.rotation.x = -Math.PI / 2;
     ring.position.y = 0.05;
     group.add(ring);
+    this.attachGeneratedVfxSprite(group, 'thunder_bolt', 4.6);
 
     this.scene.add(group);
     this.vfxList.push({
@@ -1070,6 +1504,7 @@ export class Renderer3D {
     }));
     pillar.position.y = 3;
     group.add(pillar);
+    this.attachGeneratedVfxSprite(group, 'level_up_aura', 4.8);
 
     this.scene.add(group);
     this.vfxList.push({
@@ -1097,6 +1532,7 @@ export class Renderer3D {
       p.position.set((Math.random() - 0.5) * 0.6, Math.random() * 0.4, (Math.random() - 0.5) * 0.6);
       group.add(p);
     }
+    this.attachGeneratedVfxSprite(group, 'soul_crystal', 1.8);
 
     this.scene.add(group);
     this.vfxList.push({
@@ -1119,6 +1555,7 @@ export class Renderer3D {
     const ring = new THREE.Mesh(new THREE.RingGeometry(0.3, 0.9, 16), dustMat);
     ring.rotation.x = -Math.PI / 2;
     group.add(ring);
+    this.attachGeneratedVfxSprite(group, 'dash_dust', 2.4);
 
     this.scene.add(group);
     this.vfxList.push({
@@ -1141,6 +1578,7 @@ export class Renderer3D {
       if (vfx.update) vfx.update(vfx.ttl);
 
       if (vfx.ttl <= 0) {
+        this.disposeGeneratedSpritesInGroup(vfx.group);
         this.scene.remove(vfx.group);
         this.vfxList.splice(i, 1);
       }
@@ -1148,6 +1586,7 @@ export class Renderer3D {
   }
 
   public render(camera: THREE.PerspectiveCamera) {
+    this.updateGeneratedSpriteFrames(camera);
     this.renderer.render(this.scene, camera);
   }
 }

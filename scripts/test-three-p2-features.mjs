@@ -120,19 +120,21 @@ async function testP2Features() {
     console.log('Selected Nine-Tail Shadow in Bestiary');
   }
 
-  // Verify 3D turntable canvas is present
-  await page.waitForSelector('#bestiary-viewport canvas', { state: 'visible', timeout: 3000 });
-  const bestiaryCanvas = await page.$('#bestiary-viewport canvas');
-  console.log('✅ Bestiary 3D Turntable Canvas verified:', !!bestiaryCanvas);
-
-  // Drag on turntable canvas to test 360 rotation interaction
-  const viewportBox = await (await page.$('#bestiary-viewport')).boundingBox();
-  if (viewportBox) {
-    await page.mouse.move(viewportBox.x + 50, viewportBox.y + 50);
-    await page.mouse.down();
-    await page.mouse.move(viewportBox.x + 120, viewportBox.y + 50, { steps: 5 });
-    await page.mouse.up();
-    console.log('✅ Interactive turntable drag rotation tested successfully');
+  // Verify the generated character reference board is present and decoded
+  await page.waitForSelector('.bestiary-preview-viewport img.generated-character-image', { state: 'visible', timeout: 3000 });
+  await page.waitForFunction(() => {
+    const image = document.querySelector('.bestiary-preview-viewport img.generated-character-image');
+    return image instanceof HTMLImageElement && image.complete && image.naturalWidth > 1;
+  }, undefined, { timeout: 5000 });
+  const bestiaryImage = await page.$('.bestiary-preview-viewport img.generated-character-image');
+  const bestiaryImageInfo = await page.$eval('.bestiary-preview-viewport img.generated-character-image', (image) => ({
+    src: image.getAttribute('src'),
+    naturalWidth: image.naturalWidth,
+    naturalHeight: image.naturalHeight
+  }));
+  console.log('✅ Generated Bestiary character board verified:', { present: !!bestiaryImage, ...bestiaryImageInfo });
+  if (!bestiaryImage || !bestiaryImageInfo.src?.includes('/assets/generated/characters/nine_tail_shadow.png') || bestiaryImageInfo.naturalWidth <= 1) {
+    throw new Error('Generated Bestiary character board did not load');
   }
 
   await page.screenshot({ path: path.join(outDir, 'bestiary-modal.png') });
